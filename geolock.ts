@@ -89,40 +89,49 @@ if (checkIfInside(spotCoordinates)) {
 }
 
 // Check if a point of coordinates is on a LineString
-let punto = { x: 11, y: 43 };
-let inizio = { x: 12, y: 44 };
-let fine = { x: 10, y: 42 };
-
-function lies_on_segment(point, start, end) {
-  const deltax = end.x - start.x;
-
-  if (deltax === 0) {
-    const liesInXDir = point.x === start.x;
-    if (liesInXDir) {
-      const deltay = end.y - start.y;
-      if (deltay === 0) {
-        return point.y === start.y;
-      } else {
-        const t = (point.y - start.y) / deltay;
-        return t >= 0 && t <= 1;
-      }
-    } else {
-      return false;
-    }
-  } else {
-    const t = (point.x - start.x) / deltax;
-    const liesInXDir = t >= 0 && t <= 1;
-
-    if (liesInXDir) {
-      const deltay = end.y - start.y;
-      if (deltay === 0) {
-        return point.y === start.y;
-      } else {
-        const t = (point.y - start.y) / deltay;
-        return t >= 0 && t <= 1;
-      }
-    } else {
-      return false;
-    }
+function distance(UNO: any, DUE: any) {
+  // Funzione per convertire gradi in radianti
+  function toRadians(degrees: any) {
+    return degrees * (Math.PI / 180);
   }
+
+  var R = 6371; // Raggio della Terra in chilometri
+
+  // Calcolo delle differenze in radianti
+  var dLat = toRadians(DUE.lat - UNO.lat);
+  var dLng = toRadians(DUE.lng - UNO.lng);
+
+  // Calcolo della distanza utilizzando la formula di Haversine
+  var a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(toRadians(UNO.lat)) *
+      Math.cos(toRadians(DUE.lat)) *
+      Math.sin(dLng / 2) *
+      Math.sin(dLng / 2);
+
+  var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+  var distanza = R * c;
+  // console.log(distanza);
+
+  return distanza;
+}
+
+var A = {
+  lat: 11,
+  lng: 44,
+}; // Esempio di coordinate per A
+
+var B = {
+  lat: 13,
+  lng: 46,
+}; // Esempio di coordinate per B
+
+var C = { lat: 12, lng: 45 }; // Esempio di coordinate per C
+
+if (Math.abs(distance(A, C) + distance(B, C) - distance(A, B)) < 0.0001) {
+  return true; // C è sulla linea.
+} else {
+  return false;
+  // C non è sulla linea.
 }
